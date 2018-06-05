@@ -13,3 +13,4 @@ native/packr.vcxproj*
 
 .gradle/
 build/
+bin/
