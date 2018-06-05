@@ -1,0 +1,55 @@
+apply plugin: 'java'
+apply plugin: 'maven'
+
+group = 'com.diffplug.packr'
+version = '2.2'
+
+description = """packr"""
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+tasks.withType(JavaCompile) {
+	options.encoding = 'UTF-8'
+}
+
+configurations.all {
+}
+
+repositories {
+     maven { url "http://repo.maven.apache.org/maven2" }
+}
+
+apply plugin: 'eclipse'
+
+dependencies {
+    compile group: 'org.zeroturnaround', name: 'zt-zip', version:'1.10'
+    compile group: 'com.eclipsesource.minimal-json', name: 'minimal-json', version:'0.9.1'
+    compile group: 'com.lexicalscope.jewelcli', name: 'jewelcli', version:'0.8.9'
+    compile group: 'org.slf4j', name: 'slf4j-simple', version:'1.6.6'
+}
+
+task sourceJar(type: Jar) {
+	from sourceSets.main.allJava
+}
+
+apply plugin: 'maven-publish'
+publishing {
+	publications {
+		mavenJava(MavenPublication) {
+			from components.java
+			artifact sourceJar {
+				classifier 'sources'
+			}
+		}
+	}
+	repositories {
+		maven {
+			boolean isSnapshot = project.version.endsWith('-SNAPSHOT')
+			url "http://artifactory.diffplug.local/artifactory/libs-${isSnapshot ? 'snapshot' : 'release'}-local"
+			credentials {
+				username "nedtwigg"
+				password "AKCp2WY1U4oiCVr3KrWMz8D4JG9FXh2DCKmVxpXMcG6uWGMa9zQ6tNuCZY9wjkM8ZfAD6Vcjq"
+			}
+		}
+	}
+}
